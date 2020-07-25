@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import List
 
-from analyser.find_transaction_gt_abs_ceil import find_transaction_gt_abs_ceil
+from analyser.find_transaction_gt_abs_ceil import find_transaction_gt_abs_ceil, Analyser
 from analyser.max_negative_transaction import find_max_negative_transaction_using_cb
 from analyser.money_input import get_positive_transaction
 from analyser.naturalia_spent_tracker import analyse_naturalia_spent
@@ -35,6 +35,21 @@ def main():
     print(len(trx))
     for t in trx:
         print(t.date, t.label, t.amount)
+
+    # ALTERNATIVE CODE WITH FLUENT API
+    print("ALTERNATIVE")
+    analyser = Analyser(transactions)
+    trx = analyser.filter_date(origin, end).filter_gt_abs_ceil(1500).get_transactions()
+    print(len(trx))
+    for t in trx:
+        print(t.date, t.label, t.amount)
+
+    print(analyser.reduce_to_sum())
+    print(analyser.reduce_to_card_transaction())
+
+    print(analyser.reduce_to_sum() / analyser.reduce_to_card_transaction())
+
+    # ALTERNATIVE CODE WITH FLUENT API
 
     print("============ Last month analysis ==============")
 
