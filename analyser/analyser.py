@@ -60,6 +60,25 @@ class Analyser:
             lambda transaction: transaction.amount > 0, self.transactions_input_context))
         return self
 
+    def filter_by_kind(self, kind: str):
+        self.transactions_input_context = list(filter(
+            lambda transaction: transaction.kind == kind, self.transactions_input_context))
+        return self
+
+    def sort_transactions_by_amount(self) -> "Analyser":
+        self.transactions_input_context.sort(key=lambda trx: trx.amount)
+        return self
+
+    def head(self, n: int) -> "Analyser":
+        self.transactions_input_context = self.transactions_input_context[0:n]
+        return self
+
+    def highest_spent_transaction(self) -> Transaction:
+        return min(self.transactions_input_context, key=lambda trx: trx.amount)
+
+
+
+
     def reduce_to_sum(self) -> float:
         sum: float = 0
         for transaction in self.transactions_input_context:
@@ -74,3 +93,5 @@ class Analyser:
         if count > 0:
             return self.reduce_to_sum() / self.reduce_to_count()
         return 0
+
+

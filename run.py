@@ -2,14 +2,11 @@ from datetime import datetime
 from typing import List
 
 from analyser.analyser import Analyser
-from analyser.max_negative_transaction import find_max_negative_transaction_using_cb
-from analyser.naturalia_spent_tracker import analyse_naturalia_spent
-from analyser.spent import compute_all_cb_spent
 from model.Transaction import Transaction
 from reader.reader import deserialize_hello_bank_input_file
 
 
-def analyse_by_label_content(label: str, transactions: List[Transaction], start: datetime, end: datetime):
+def analyse_by_label_content(label: str, transactions: List[Transaction], start: datetime, end: datetime) -> float:
     """"
     To print transaction
     >>> print(analyser.__str__()[0:500])
@@ -27,6 +24,7 @@ def analyse_by_label_content(label: str, transactions: List[Transaction], start:
         f"Average basket is {average_basket}\n"
         f"Average spent per day is: {average_spent_per_day}")
     print("\n\n")
+    return total_spent_sum
 
 
 def get_positive_transactions(transactions: List[Transaction], start: datetime, end: datetime):
@@ -82,25 +80,18 @@ def main():
 
     print("============ Last month analysis ==============")
 
-    start, end = datetime(2020, 6, 1), datetime(2020, 7, 1)
-    result = compute_all_cb_spent(transactions, start, end)
-    print(
-        f"All spent Analysis WITH CB between {start} and{end}\n"
-        f"Total spent is: {result}\n")
+    start, end = datetime(2020, 6, 15), datetime(2020, 7, 15)
 
-    result = find_max_negative_transaction_using_cb(transactions, start, end)
+    analyser = Analyser(transactions)
+    analyser.filter_date(start, end).filter_by_kind("PAIEMENT CB")
     print(
-        f"Highest trx WITH CB between {start} and {end}\n"
-        f"{result.label} with amount {result.amount}\n")
+        f"\nSpent between {start} and {end} with CB is {analyser.reduce_to_sum()}\n")
+    print(analyser.highest_spent_transaction())
+    print(analyser.sort_transactions_by_amount().head(2))
+    print("\n\n")
+    analyse_by_label_content("NATURALIA", transactions, start, end)
 
-    result = analyse_naturalia_spent(transactions, start, end)
-    print(
-        f"Naturalia spent analysis between {start} and {end}\n"
-        f"Total spent is: {result[0]}\n"
-        f"Average spent per day is: {result[1]}\n"
-        f"Average basket is {result[2]}")
-
-    # we can deduce how much is spent at Naturalia from total cb spent
+    # Total cb spent = Naturalia + highest spent + epsilon
 
 
 if __name__ == "__main__":
