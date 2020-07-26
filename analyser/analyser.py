@@ -9,6 +9,7 @@ class Analyser:
     """"
     Analyse transaction using fluent interface: https://en.wikipedia.org/wiki/Fluent_interface
     """
+
     def __init__(self, transactions_input: List[Transaction]):
         self.transactions_input = transactions_input
         self.transactions_input_context = transactions_input
@@ -19,12 +20,10 @@ class Analyser:
 
     def to_dict(self):
         out_dict: Dict[str, Any] = {"count": len(self.transactions_input_context), "items": []}
+
         for index, transaction in enumerate(self.transactions_input_context):
-            content_dict: Dict[str, str] = {"id": index, "date": transaction.date.strftime("%Y-%m-%d"),
-                                            "label": transaction.label,
-                                            "amount": transaction.amount}
-            # We could use asdict dataclass function with dict_factory(transaction_tuple), to transform date and
-            # and call standard dict
+            # https://www.geeksforgeeks.org/python-merging-two-dictionaries/
+            content_dict: Dict[str, str] = {**{"id": index}, **transaction.__dict__()}
             out_dict["items"].append(content_dict)
         return out_dict
 
@@ -86,9 +85,6 @@ class Analyser:
     def highest_spent_transaction(self) -> Transaction:
         return min(self.transactions_input_context, key=lambda trx: trx.amount)
 
-
-
-
     def reduce_to_sum(self) -> float:
         sum: float = 0
         for transaction in self.transactions_input_context:
@@ -103,5 +99,3 @@ class Analyser:
         if count > 0:
             return self.reduce_to_sum() / self.reduce_to_count()
         return 0
-
-
