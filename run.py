@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import List
 
-from analyser.analyser import find_transaction_gt_abs_ceil, Analyser
+from analyser.analyser import Analyser
 from analyser.max_negative_transaction import find_max_negative_transaction_using_cb
 from analyser.naturalia_spent_tracker import analyse_naturalia_spent
 from analyser.spent import compute_all_cb_spent
@@ -38,6 +38,15 @@ def get_positive_transactions(transactions: List[Transaction], start: datetime, 
     print("\n\n")
 
 
+def get_big_transactions(transactions: List[Transaction], ceil: float, start: datetime, end: datetime):
+    analyser = Analyser(transactions)
+    analyser.filter_date(start, end).filter_gt_abs_ceil(ceil)
+    print(
+        f"\nBig transactions between {start} and {end}\n")
+    print(analyser)
+    print("\n\n")
+
+
 def main():
     transactions: List[Transaction] = deserialize_hello_bank_input_file("data.csv")
 
@@ -47,27 +56,7 @@ def main():
     get_positive_transactions(transactions, start, end)
 
     origin = datetime(1989, 11, 24)
-    print(
-        f"\nBig transactions between {origin} and {end}\n")
-    trx = find_transaction_gt_abs_ceil(transactions, 1500, origin, end)
-    print(len(trx))
-    for t in trx:
-        print(t.date, t.label, t.amount)
-
-    # ALTERNATIVE CODE WITH FLUENT API
-    print("ALTERNATIVE")
-    analyser = Analyser(transactions)
-    trx = analyser.filter_date(origin, end).filter_gt_abs_ceil(1500).get_transactions()
-    print(len(trx))
-    for t in trx:
-        print(t.date, t.label, t.amount)
-
-    print(analyser.reduce_to_sum())
-    print(analyser.reduce_to_count())
-
-    print(analyser.reduce_to_sum() / analyser.reduce_to_count())
-
-    # ALTERNATIVE CODE WITH FLUENT API
+    get_big_transactions(transactions, 1500, origin, end)
 
     print("============ Last month analysis ==============")
 
