@@ -3,11 +3,9 @@ from typing import List
 
 from analyser.analyser import find_transaction_gt_abs_ceil, Analyser
 from analyser.max_negative_transaction import find_max_negative_transaction_using_cb
-from analyser.money_input import get_positive_transaction
 from analyser.naturalia_spent_tracker import analyse_naturalia_spent
 from analyser.spent import compute_all_cb_spent
 from model.Transaction import Transaction
-
 from reader.reader import deserialize_hello_bank_input_file
 
 
@@ -28,6 +26,16 @@ def analyse_by_label_content(label: str, transactions: List[Transaction], start:
         f"Total spent is: {total_spent_sum}\n"
         f"Average basket is {average_basket}\n"
         f"Average spent per day is: {average_spent_per_day}")
+    print("\n\n")
+
+
+def get_positive_transactions(transactions: List[Transaction], start: datetime, end: datetime):
+    analyser = Analyser(transactions)
+    analyser.filter_date(start, end).filter_negative_transaction()
+    print(
+        f"\nPositive transactions between {start} and {end}\n")
+    print(analyser)
+    print("\n\n")
 
 
 def main():
@@ -36,13 +44,7 @@ def main():
     print("============ Several months analysis ==============")
     start, end = datetime(2020, 2, 1), datetime.now()
     analyse_by_label_content("NATURALIA", transactions, start, end)
-
-
-    print(
-        f"\npostive transactions between {start} and {end}\n")
-    labels = [trx.label for trx in get_positive_transaction(transactions, start, end)]
-    for l in labels:
-        print(l)
+    get_positive_transactions(transactions, start, end)
 
     origin = datetime(1989, 11, 24)
     print(

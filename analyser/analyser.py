@@ -44,6 +44,11 @@ class Analyser:
             lambda transaction: values_to_be_contained in transaction.label, self.transactions_input_context))
         return self
 
+    def filter_negative_transaction(self):
+        self.transactions_input_context = list(filter(
+            lambda transaction: transaction.amount > 0, self.transactions_input_context))
+        return self
+
     def reduce_to_sum(self) -> float:
         sum: float = 0
         for transaction in self.transactions_input_context:
