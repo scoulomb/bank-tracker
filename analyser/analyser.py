@@ -23,6 +23,8 @@ class Analyser:
             content_dict: Dict[str, str] = {"id": index, "date": transaction.date.strftime("%Y-%m-%d"),
                                             "label": transaction.label,
                                             "amount": transaction.amount}
+            # We could use asdict dataclass function with dict_factory(transaction_tuple), to transform date and
+            # and call standard dict
             out_dict["items"].append(content_dict)
         return out_dict
 
