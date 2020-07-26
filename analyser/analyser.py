@@ -39,9 +39,20 @@ class Analyser:
             lambda transaction: abs(transaction.amount) > ceil, self.transactions_input_context))
         return self
 
-    def filter_by_label_contains_value(self, values_to_be_contained: str) -> "Analyser":
+    def filter_by_label_contains_value(self, value_to_be_contained: str) -> "Analyser":
         self.transactions_input_context = list(filter(
-            lambda transaction: values_to_be_contained in transaction.label, self.transactions_input_context))
+            lambda transaction: value_to_be_contained in transaction.label, self.transactions_input_context))
+        return self
+
+    def filter_by_label_contains_value_list(self, values_to_be_contained: List[str]) -> "Analyser":
+        def filter_func(transaction: Transaction):
+            for value in values_to_be_contained:
+                if value in transaction.label:
+                    return True
+            return False
+
+        self.transactions_input_context = list(filter(
+            filter_func, self.transactions_input_context))
         return self
 
     def filter_negative_transaction(self):

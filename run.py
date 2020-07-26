@@ -47,6 +47,25 @@ def get_big_transactions(transactions: List[Transaction], ceil: float, start: da
     print("\n\n")
 
 
+def get_employer_payment(transactions: List[Transaction], start: datetime, end: datetime, business_trip_only=False):
+    analyser = Analyser(transactions)
+    business_trip_label_deprecated = "VIR SEPA RECU /DE COULOMBEL SYLVAIN /MOTIF  /REF "
+    business_trip_label = "DEUS SAS  - DIRECTION FINANCIERE /MOTIF INV"
+    salary_label = "DEUS SAS  - DIRECTION FINANCIERE /MOTIF  /REF AMAD"
+
+    label_list = [business_trip_label_deprecated, business_trip_label]
+    if not business_trip_only:
+        label_list.append(salary_label)
+
+    analyser.filter_date(start, end).filter_by_label_contains_value_list(
+        label_list)
+
+    print(
+        f"\nEmployer transactions between {start} and {end} (with business trip only set to {business_trip_only})\n")
+    print(analyser)
+    print("\n\n")
+
+
 def main():
     transactions: List[Transaction] = deserialize_hello_bank_input_file("data.csv")
 
@@ -58,9 +77,12 @@ def main():
     origin = datetime(1989, 11, 24)
     get_big_transactions(transactions, 1500, origin, end)
 
+    get_employer_payment(transactions, origin, end)
+    get_employer_payment(transactions, origin, end, business_trip_only=True)  # match trips in cal and find ref in mail
+
     print("============ Last month analysis ==============")
 
-    start, end = datetime(2020, 6, 20), datetime(2020, 7, 10)
+    start, end = datetime(2020, 6, 1), datetime(2020, 7, 1)
     result = compute_all_cb_spent(transactions, start, end)
     print(
         f"All spent Analysis WITH CB between {start} and{end}\n"
