@@ -6,6 +6,9 @@ from model.Transaction import Transaction
 
 
 class Analyser:
+    """"
+    Analyse transaction using fluent interface: https://en.wikipedia.org/wiki/Fluent_interface
+    """
     def __init__(self, transactions_input: List[Transaction]):
         self.transactions_input = transactions_input
         self.transactions_input_context = transactions_input

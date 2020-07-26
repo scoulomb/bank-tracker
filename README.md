@@ -4,10 +4,8 @@ Quick and dirty project to analyse my account
 
 # Ideas
 
-- categorize spent, auto determine, generalize naturalia
+- categorize spent, auto determine
 (smart category)
 - regex: FACTURE CARTE DU [0-9]{6} (.*?)CARTE
 - ci/cd docker
-- use decorator or fluent api as done in find gt ceil, https://en.wikipedia.org/wiki/Fluent_interface
-(filter_contain_label no need samrt cat)
 - use cli
