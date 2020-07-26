@@ -1,27 +1,43 @@
 from datetime import datetime
 from typing import List
 
-from analyser.find_transaction_gt_abs_ceil import find_transaction_gt_abs_ceil, Analyser
+from analyser.analyser import find_transaction_gt_abs_ceil, Analyser
 from analyser.max_negative_transaction import find_max_negative_transaction_using_cb
 from analyser.money_input import get_positive_transaction
 from analyser.naturalia_spent_tracker import analyse_naturalia_spent
 from analyser.spent import compute_all_cb_spent
-from model import Transaction
+from model.Transaction import Transaction
+
 from reader.reader import deserialize_hello_bank_input_file
+
+
+def analyse_by_label_content(label: str, transactions: List[Transaction], start: datetime, end: datetime):
+    """"
+    To print transaction
+    >>> print(analyser.__str__()[0:500])
+    >>> print(anylyser)
+    """
+    analyser = Analyser(transactions)
+    analyser.filter_date(start, end).filter_by_label_contains_value(label)
+    total_spent_sum = analyser.reduce_to_sum()
+    average_basket = analyser.reduce_to_average()
+    average_spent_per_day = total_spent_sum / (end - start).days
+
+    print(
+        f"{label} Analysis between {start} and {end}\n"
+        f"Total spent is: {total_spent_sum}\n"
+        f"Average basket is {average_basket}\n"
+        f"Average spent per day is: {average_spent_per_day}")
 
 
 def main():
     transactions: List[Transaction] = deserialize_hello_bank_input_file("data.csv")
 
-    print("============ Several month analysis ==============")
+    print("============ Several months analysis ==============")
     start, end = datetime(2020, 2, 1), datetime.now()
+    analyse_by_label_content("NATURALIA", transactions, start, end)
 
-    result = analyse_naturalia_spent(transactions, start, end)
-    print(
-        f"NATURALIA Analysis between {start} and {end}\n"
-        f"Total spent is: {result[0]}\n"
-        f"Average spent per day is: {result[1]}\n"
-        f"Average basket is {result[2]}")
+
     print(
         f"\npostive transactions between {start} and {end}\n")
     labels = [trx.label for trx in get_positive_transaction(transactions, start, end)]
@@ -45,9 +61,9 @@ def main():
         print(t.date, t.label, t.amount)
 
     print(analyser.reduce_to_sum())
-    print(analyser.reduce_to_card_transaction())
+    print(analyser.reduce_to_count())
 
-    print(analyser.reduce_to_sum() / analyser.reduce_to_card_transaction())
+    print(analyser.reduce_to_sum() / analyser.reduce_to_count())
 
     # ALTERNATIVE CODE WITH FLUENT API
 

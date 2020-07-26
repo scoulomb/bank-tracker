@@ -10,13 +10,13 @@ def analyse_naturalia_spent(transactions_input: List[Transaction], start_date: d
 
     naturalia_transactions_time_filtered = filter(
         lambda trx: start_date < trx.date < end_date, naturalia_transactions)
-
+    #print(len(list((naturalia_transactions_time_filtered))))
     amount_sum = 0
     transaction_count = 0
     for transaction in naturalia_transactions_time_filtered:
-        #  print(transaction)
         amount_sum += transaction.amount
         transaction_count += 1
+
 
     delta = (end_date - start_date).days
     sum_per_day = amount_sum / delta
