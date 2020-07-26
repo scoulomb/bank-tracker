@@ -79,20 +79,27 @@ def year_analysis(transactions: List[Transaction]):
 
 def month_analysis(transactions: List[Transaction]):
     """"
-    CB spent = highest trx + Naturalia + epsilon
+    Top 5 transactions in the account + cb spent + top cb + Naturalia reduction + epsilon (recoupement)
+    enables to see where money is going
     """
-    print("============ Last month analysis ==============")
+    print("============ Last months analysis ==============")
     start, end = datetime(2020, 6, 15), datetime(2020, 7, 15)
-
+    print(
+        f"\nAnalyse period is between {start} and {end}")
     analyser = Analyser(transactions)
+    print(
+        f"Top 5 transactions in the account are\n")
+    print(analyser.filter_date(start, end).filter_positive_transaction().sort_transactions_by_amount().head(5))
+
+    analyser.reset()
     analyser.filter_date(start, end).filter_by_kind("PAIEMENT CB")
     print(
-        f"\nSpent between {start} and {end} with CB is {analyser.reduce_to_sum()}")
+        f"\nCB Spent between {start} and {end} is {analyser.reduce_to_sum()}")
     # print(analyser.highest_spent_transaction())
     print(
-        f"Where top transaction are\n")
+        f"Where top CB transactions are\n")
     print(analyser.sort_transactions_by_amount().head(2))
-    print("\nWhere spent includes Naturalia =>")
+    print("\nThe CB spent includes Naturalia =>")
     analyse_by_label_content("NATURALIA", transactions, start, end)
 
 

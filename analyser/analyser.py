@@ -63,6 +63,11 @@ class Analyser:
             lambda transaction: transaction.amount > 0, self.transactions_input_context))
         return self
 
+    def filter_positive_transaction(self):
+        self.transactions_input_context = list(filter(
+            lambda transaction: transaction.amount < 0, self.transactions_input_context))
+        return self
+
     def filter_by_kind(self, kind: str):
         self.transactions_input_context = list(filter(
             lambda transaction: transaction.kind == kind, self.transactions_input_context))
