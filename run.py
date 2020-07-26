@@ -64,10 +64,8 @@ def get_employer_payment(transactions: List[Transaction], start: datetime, end: 
     print("\n\n")
 
 
-def main():
-    transactions: List[Transaction] = deserialize_hello_bank_input_file("data.csv")
-
-    print("============ Several months analysis ==============")
+def year_analysis(transactions: List[Transaction]):
+    print("============ Year analysis ==============")
     start, end = datetime(2020, 2, 1), datetime.now()
     analyse_by_label_content("NATURALIA", transactions, start, end)
     get_positive_transactions(transactions, start, end)
@@ -78,20 +76,30 @@ def main():
     get_employer_payment(transactions, origin, end)
     get_employer_payment(transactions, origin, end, business_trip_only=True)  # match trips in cal and find ref in mail
 
-    print("============ Last month analysis ==============")
 
+def month_analysis(transactions: List[Transaction]):
+    """"
+    CB spent = highest trx + Naturalia + epsilon
+    """
+    print("============ Last month analysis ==============")
     start, end = datetime(2020, 6, 15), datetime(2020, 7, 15)
 
     analyser = Analyser(transactions)
     analyser.filter_date(start, end).filter_by_kind("PAIEMENT CB")
     print(
-        f"\nSpent between {start} and {end} with CB is {analyser.reduce_to_sum()}\n")
-    print(analyser.highest_spent_transaction())
+        f"\nSpent between {start} and {end} with CB is {analyser.reduce_to_sum()}")
+    # print(analyser.highest_spent_transaction())
+    print(
+        f"Where top transaction are\n")
     print(analyser.sort_transactions_by_amount().head(2))
-    print("\n\n")
+    print("\nWhere spent includes Naturalia =>")
     analyse_by_label_content("NATURALIA", transactions, start, end)
 
-    # Total cb spent = Naturalia + highest spent + epsilon
+
+def main():
+    transactions: List[Transaction] = deserialize_hello_bank_input_file("data.csv")
+    year_analysis(transactions)
+    month_analysis(transactions)
 
 
 if __name__ == "__main__":
